@@ -29,6 +29,7 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-# python /Users/marcoalejandrogalindo/Downloads/YOLO_HSU/HSU_FINAL.py
-# to run this file i use a venv with ultralytics installed
+#python "/Users/marcoalejandrogalindo/Vision TMR MAZE/Maze-TMR-VISION-/Detection/HSU/HSU_FINAL.py"
+# # to run this file i use a venv with ultralytics installed
 # source /Users/marcoalejandrogalindo/venv_yolo/bin/activate
+#some times u have to downlawd con tne venv pip install opencv-python ultralytics
