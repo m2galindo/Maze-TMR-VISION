@@ -35,7 +35,7 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 
-# python /Users/marcoalejandrogalindo/Downloads/YOLO_HSU/camera_detector.py
+# python /Users/marcoalejandrogalindo/DESKTOP/YOLO_HSU/camera_detector.py
 # to run this file i use a venv with ultralytics installed
 # source /Users/marcoalejandrogalindo/venv_yolo/bin/activate
 
