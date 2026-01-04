@@ -1,0 +1,51 @@
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.models import Model
+
+# 1. CONFIGURACIÓN DE DATA AUGMENTATION
+# Esto convierte tus 20 fotos en cientos de variantes en cada época
+train_datagen = ImageDataGenerator(
+    rescale=1./255,      # Normaliza los píxeles (0 a 1)
+    rotation_range=30,   # Rota las letras hasta 30 grados
+    width_shift_range=0.2, # Mueve la letra horizontalmente
+    height_shift_range=0.2, # Mueve la letra verticalmente
+    shear_range=0.2,     # Deforma la imagen un poco
+    zoom_range=0.2,      # Acerca o aleja la imagen
+    brightness_range=[0.8, 1.2], # Cambia la iluminación
+    fill_mode='nearest',
+    validation_split=0.2 # Usa el 20% para pruebas (opcional pero recomendado)
+)
+
+# 2. CARGAR TUS IMÁGENES
+# Asegúrate de que tus carpetas estén en 'dataset/H', 'dataset/S', etc.
+train_generator = train_datagen.flow_from_directory(
+    'tu_carpeta_de_imagenes', 
+    target_size=(224, 224),
+    batch_size=8, # Batch pequeño porque tienes pocos datos
+    class_mode='categorical',
+    subset='training'
+)
+
+# 3. CREAR EL MODELO USANDO MOBILENET V2
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+base_model.trainable = False  # Congelamos la parte pesada del modelo
+
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.5)(x) # Ayuda a que no se memorice las fotos (evita overfitting)
+predictions = Dense(4, activation='softmax')(x) # 4 clases: H, S, e, U
+
+model = Model(inputs=base_model.input, outputs=predictions)
+
+# 4. COMPILAR Y ENTRENAR
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+print("Entrenando...")
+model.fit(train_generator, epochs=25) # Dale más épocas ya que son pocos datos
+
+# 5. GUARDAR EL MODELO
+model.save('modelo_letras_mobilenet.h5')
+print("¡Modelo guardado!")
